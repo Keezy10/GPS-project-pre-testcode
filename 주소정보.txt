@@ -1,0 +1,13 @@
+GNSS_SERVER = {'ip': '10.231.164.212', 'user': 'lgeadmin', 'pw': 'lge123!!'}
+PING_SERVER = {'ip': '10.231.165.47', 'user': 'appserver', 'pw': 'lge123!!'}
+TARGET_IP = '10.218.224.61'  # PING_SERVER에서 핑을 날릴 목적지
+
+SMTP_SERVER = "gmail.com"
+SMTP_PORT = 465
+SENDER_EMAIL = "gps.signal.monitoring@gmail.com"
+SENDER_PASSWORD = "wwbvkontourorttu"
+RECEIVER_EMAIL = "philjin.kang@lge.com"
+
+
+알람 멜 주소 : gps.signal.monitoring@gmail.com
+앱 비밀번호 : wwbvkontourorttu
