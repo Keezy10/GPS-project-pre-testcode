@@ -10,22 +10,21 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# 백그라운드 무인 가동 시 그래프 팝업 창 에러 방지 설정
 import matplotlib
 matplotlib.use('Agg')
 
 # =========================================================================
 # [사용자 설정 영역] 본인의 서버 및 계정 정보에 맞게 수정해 주세요.
 # =========================================================================
-GNSS_SERVER = {'ip': '10.231.164.212', 'user': 'lgeadmin', 'pw': 'lge123!!'}
-PING_SERVER = {'ip': '10.231.165.47', 'user': 'appserver', 'pw': 'lge123!!'}
-TARGET_IP = '10.218.224.61'
+GNSS_SERVER = {'ip': '10.231.164.212', 'user': 'lgeadmin', 'pw': 'xxxx'}
+PING_SERVER = {'ip': '10.231.165.47', 'user': 'appserver', 'pw': 'xxxx'}
+TARGET_IP = '10.218.224.61' # watchdog device ip
 
 SMTP_SERVER = "gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "gps.signal.monitoring@gmail.com"
-SENDER_PASSWORD = "wwbvkontourorttu"
-RECEIVER_EMAIL = "philjin.kang@lge.com"  
+SENDER_EMAIL = "xxxxxxxxxxxxxxxxxxxxxxxxxx"   
+SENDER_PASSWORD = "xxxxxxxxxxxxxxxxxxxxxx"
+RECEIVER_EMAIL = "philjin.kang@lge.com"  # 수신인 메일 주소
 
 # 💡 [정식 실운영 설정] 24시간 무인 가동을 위해 주기를 10분(600초)으로 고정합니다.
 INTERVAL_SECONDS = 600 
@@ -49,7 +48,6 @@ def send_alert_email_ssl(subject, body):
         print(f"❌ 알람 메일 발송 실패: {e}")
 
 def get_gnss_data():
-    """서버 멈춤 현상 방지를 위해 SSH 자체 타임아웃(10초)을 추가하고 파싱 결함을 수정한 안전 인출 구조"""
     records = []
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -97,7 +95,6 @@ def get_gnss_data():
     return records
 
 def get_ping_data():
-    """독립 세션으로 핑을 정확히 3회 수행하며 SSH 타임아웃 안전장치 반영"""
     records = []
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -125,7 +122,6 @@ def get_ping_data():
     return records
 
 def save_and_generate_graph(current_df):
-    """수집 데이터를 누적 엑셀에 추가하고 기존 규격대로 이중 Y축 추이 그래프를 갱신합니다."""
     log_file = 'gnss_monitor_log.xlsx'
     graph_file = 'gnss_monitor_graph.png'
     
@@ -166,7 +162,6 @@ def save_and_generate_graph(current_df):
         print(f"⚠️ 그래프 생성 중 문제 발생: {e}")
 
 def check_advanced_alerts(log_file):
-    """[고도화 알람 회로] 누적 파일 분석 기반 정밀 알람 회로"""
     try:
         df = pd.read_excel(log_file)
         if len(df) == 0:
@@ -262,7 +257,6 @@ def monitor_interval():
     save_and_generate_graph(final_df)
     check_advanced_alerts(log_file)
     
-    # [기존 유지 알람] 단일 행 기반 간단 실시간 경보
     has_loss_alert = (final_df['Fix'].astype(str) == '0').any() or (final_df['Fix'].astype(str) == '').any()
     has_low_sat_alert = (final_df['Sat_Count'] <= 4).any()
     current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
